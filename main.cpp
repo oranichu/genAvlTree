@@ -23,10 +23,10 @@ public:
     }
 };
 
-class PrintDataFunc {
+class PrintRankFunc {
 public:
     void operator()(AvlNode<int,int> *current) {
-        cout << current->getData() << " ";
+        cout << current->getRank() << " ";
     }
 };
 
@@ -55,25 +55,30 @@ int main() {
     int n13 = 3 ;
     int n14 = 2;
     int n15 = 1 ;
+    int n = 0 ;
 
-    tree.insert(n1);
-    tree.insert(n2);
-    tree.insert(n3);
-    tree.insert(n4);
-    tree.insert(n5);
-    tree.insert(n6);
-    tree.insert(n7);
-    tree.insert(n8);
-    tree.insert(n9);
-    tree.insert(n10);
-    tree.insert(n11);
-    tree.insert(n12);
-    tree.insert(n13);
-    tree.insert(n14);
-    tree.insert(n15);
+    tree.insert(n1,n);
+    tree.insert(n2,n);
+    tree.insert(n3,n);
+    tree.insert(n4,n);
+    tree.insert(n5,n);
+    tree.insert(n6,n);
+    tree.insert(n7,n);
+    tree.insert(n8,n);
+    tree.insert(n9,n);
+    tree.insert(n10,n);
+    tree.insert(n11,n);
+    tree.insert(n12,n);
+    tree.insert(n13,n);
+    tree.insert(n14,n);
+    tree.insert(n15,n);
 
+    PrintRankFunc p ;
 
     printTree(tree.getRoot(), NULL, false);
+    cout << "****************************" << endl ;
+    printRank(tree.getRoot(), NULL, false);
+
 
     return 0;
 }
