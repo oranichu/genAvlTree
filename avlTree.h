@@ -28,36 +28,36 @@ int maxFunc(int x1, int x2) {
     return x2;
 }
 
-template<typename T>
+template<typename T,typename U>
 class AvlNode {
     T data;
-    AvlNode<T> *father;
-    AvlNode<T> *lSon;
-    AvlNode<T> *rSon;
+    AvlNode<T,U> *father;
+    AvlNode<T,U> *lSon;
+    AvlNode<T,U> *rSon;
     int height;
     int rank;
-    int sumRank;
+    U sumRank;
 public:
     AvlNode(const T &data) : data(data), father(NULL), lSon(NULL),
                              rSon(NULL), height(0),rank(0),sumRank(0) {};
 
     void setData(const T &d) { data = d; }
 
-    void setFather(AvlNode<T> *parent) { father = parent; }
+    void setFather(AvlNode<T,U> *parent) { father = parent; }
 
-    void setLeftSon(AvlNode<T> *left_son) { lSon = left_son; }
+    void setLeftSon(AvlNode<T,U> *left_son) { lSon = left_son; }
 
-    void setRightSon(AvlNode<T> *right_son) { rSon = right_son; }
+    void setRightSon(AvlNode<T,U> *right_son) { rSon = right_son; }
 
     const T &getData()  {
         return data;
     }
 
-    AvlNode<T> *getFather() const { return father; }
+    AvlNode<T,U> *getFather() const { return father; }
 
-    AvlNode<T> *getLeftSon() const { return lSon; }
+    AvlNode<T,U> *getLeftSon() const { return lSon; }
 
-    AvlNode<T> *getRightSon() const { return rSon; }
+    AvlNode<T,U> *getRightSon() const { return rSon; }
 
     int getHeight() const { return height; }
 
@@ -87,18 +87,18 @@ public:
 
 };
 
-template<typename T, typename CompareFunction>
+template<typename T,typename U, typename CompareFunction>
 class AvlTree {
 
 private:
-    AvlNode<T> *root;
+    AvlNode<T,U> *root;
     /** cmp function for the tree ,returns -1 if we want x1 to be on the left
      * son return 1 if we want x1 to be on the right side , and 0 if x1 == x2 */
     CompareFunction cmp;
     int size ;
 
-    AvlNode<T> *
-    sortInsert(AvlNode<T> *current, AvlNode<T> *new_node) {
+    AvlNode<T,U> *
+    sortInsert(AvlNode<T,U> *current, AvlNode<T,U> *new_node) {
         // if x1 <= x2 of the cmp function we want the new node to be on the left
         if (cmp(new_node->getData(), current->getData()) <= EQUAL) {
             if (current->getLeftSon() == NULL) {
@@ -122,7 +122,7 @@ private:
         return balance(current);
     }
 
-    void makeSon(AvlNode<T> *father, AvlNode<T> *son, Place p) const {
+    void makeSon(AvlNode<T,U> *father, AvlNode<T,U> *son, Place p) const {
         if (son != NULL) {
             son->setFather(father);
         }
@@ -135,7 +135,7 @@ private:
 
     template<typename Func>
     //Function to determant what we want to do.
-    void startInorder(AvlNode<T> *current, Func f) {
+    void startInorder(AvlNode<T,U> *current, Func f) {
         if (current == NULL) {
             return;
         }
@@ -145,7 +145,7 @@ private:
     }
 
     template<typename Func>
-    void startPreorder(AvlNode<T> *current, Func f) {
+    void startPreorder(AvlNode<T,U> *current, Func f) {
         if (current == NULL) {
             return;
         }
@@ -155,7 +155,7 @@ private:
     }
 
     template<typename Func>
-    void startPostorder(AvlNode<T> *current, Func f) {
+    void startPostorder(AvlNode<T,U> *current, Func f) {
         if (current == NULL) {
             return;
         }
@@ -164,7 +164,7 @@ private:
         f(current);
     }
 
-    AvlNode<T> *recFind(AvlNode<T> *current, T key) {
+    AvlNode<T,U> *recFind(AvlNode<T,U> *current, T key) {
         if (current == NULL) {
             return NULL;
         }
@@ -177,7 +177,7 @@ private:
         return recFind(current->getRightSon(), key);
     }
 
-    AvlNode<T> *balance(AvlNode<T> *node) {
+    AvlNode<T,U> *balance(AvlNode<T,U> *node) {
         int balance = node->diff();
         if (balance > 1) {
             if (node->getLeftSon()->diff() >= 0) {
@@ -196,8 +196,8 @@ private:
         return node;
     }
 
-    AvlNode<T> *rightRotation(AvlNode<T> *node) {
-        AvlNode<T> *tempA = node->getLeftSon();
+    AvlNode<T,U> *rightRotation(AvlNode<T,U> *node) {
+        AvlNode<T,U> *tempA = node->getLeftSon();
         tempA->setFather(node->getFather());
         makeSon(node, node->getLeftSon()->getRightSon(), LEFT);
         makeSon(tempA, node, RIGHT);
@@ -206,8 +206,8 @@ private:
         return tempA;
     }
 
-    AvlNode<T> *leftRotation(AvlNode<T> *node) {
-        AvlNode<T> *tempA = node->getRightSon();
+    AvlNode<T,U> *leftRotation(AvlNode<T,U> *node) {
+        AvlNode<T,U> *tempA = node->getRightSon();
         tempA->setFather(node->getFather());
         makeSon(node, node->getRightSon()->getLeftSon(), RIGHT);
         makeSon(tempA, node, LEFT);
@@ -216,7 +216,7 @@ private:
         return tempA;
     }
 
-    void updateHeight(AvlNode<T> *node) {
+    void updateHeight(AvlNode<T,U> *node) {
         int leftSonH = -1, rightSonH = -1;
         if (node->getLeftSon() != NULL) {
             leftSonH = node->getLeftSon()->getHeight();
@@ -227,25 +227,25 @@ private:
         node->setHeight(maxFunc(leftSonH, rightSonH) + 1);
     }
 
-    AvlNode<T> *llRotation(AvlNode<T> *node) {
+    AvlNode<T,U> *llRotation(AvlNode<T,U> *node) {
         return rightRotation(node);
     }
 
-    AvlNode<T> *lrRotation(AvlNode<T> *node) {
+    AvlNode<T,U> *lrRotation(AvlNode<T,U> *node) {
         node->setLeftSon(leftRotation(node->getLeftSon()));
         return rightRotation(node);
     }
 
-    AvlNode<T> *rlRotation(AvlNode<T> *node) {
+    AvlNode<T,U> *rlRotation(AvlNode<T,U> *node) {
         node->setRightSon(rightRotation(node->getRightSon()));
         return leftRotation(node);
     }
 
-    AvlNode<T> *rrRotation(AvlNode<T> *node) {
+    AvlNode<T,U> *rrRotation(AvlNode<T,U> *node) {
         return leftRotation(node);
     }
 
-    AvlNode<T> *findMinReplace(AvlNode<T> *current) const {
+    AvlNode<T,U> *findMinReplace(AvlNode<T,U> *current) const {
         if (current == NULL) {
             return NULL;
         }
@@ -255,9 +255,9 @@ private:
         return current;
     }
 
-    AvlNode<T> *removeTwoSons(AvlNode<T> *current, AvlNode<T> *bad_node) {
+    AvlNode<T,U> *removeTwoSons(AvlNode<T,U> *current, AvlNode<T,U> *bad_node) {
         if (cmp(bad_node->getData(), current->getData()) == EQUAL) {
-            AvlNode<T> *replace_node = findMinReplace(bad_node->getRightSon());
+            AvlNode<T,U> *replace_node = findMinReplace(bad_node->getRightSon());
             current->setData(replace_node->getData());
             makeSon(current,
                     removeOneOrNoSons(current->getRightSon(), replace_node,
@@ -276,10 +276,10 @@ private:
         return balance(current);
     }
 
-    AvlNode<T> *
-    removeOneOrNoSons(AvlNode<T> *current, AvlNode<T> *bad_node, Place p) {
+    AvlNode<T,U> *
+    removeOneOrNoSons(AvlNode<T,U> *current, AvlNode<T,U> *bad_node, Place p) {
         if (cmp(bad_node->getData(), current->getData()) == EQUAL) {
-            AvlNode<T> *temp = (p == LEFT) ? current->getLeftSon()
+            AvlNode<T,U> *temp = (p == LEFT) ? current->getLeftSon()
                                            : current->getRightSon();
             delete (current);
             return temp;
@@ -308,14 +308,14 @@ public:
         treeDestroy(root);
     }
 
-    AvlNode<T> *getRoot() const { return root; }
+    AvlNode<T,U> *getRoot() const { return root; }
 
     int getSize() const {
         return size ;
     }
 
     void insert(const T &data) {
-        AvlNode<T> *new_node = new AvlNode<T>(data);
+        AvlNode<T,U> *new_node = new AvlNode<T,U>(data);
         size++;
         if (root == NULL) {
             root = new_node;
@@ -324,7 +324,7 @@ public:
         root = sortInsert(root, new_node);
 
     }
-        AvlNode<T> *find(const T &key) {
+        AvlNode<T,U> *find(const T &key) {
             return recFind(root, key);
         }
 
@@ -344,7 +344,7 @@ public:
         }
 
         bool removeNode(const T &key) {
-            AvlNode<T> *node_to_remove = find(key);
+            AvlNode<T,U> *node_to_remove = find(key);
             if (node_to_remove == NULL) {
                 return false;
             }
@@ -362,7 +362,7 @@ public:
             return true;
         }
 
-        void treeDestroy(AvlNode<T> *node) {
+        void treeDestroy(AvlNode<T,U> *node) {
             if (node == NULL) {
                 return;
             }
@@ -372,7 +372,7 @@ public:
         }
 
 //////////////////////////////////////////////////////////////
-        void printCheck(AvlNode<T> *node) {
+        void printCheck(AvlNode<T,U> *node) {
             while (node->getLeftSon() != NULL) {
                 cout << node->getData() << " ";
                 node = node->getLeftSon();
@@ -407,7 +407,7 @@ public:
 
 // Recursive function to print binary tree. It uses inorder traversal
 // call as printTree(root, NULL, false);
-    void printTree(AvlNode<int> *root, Trunk *prev, bool isLeft) {
+    void printTree(AvlNode<int,int> *root, Trunk *prev, bool isLeft) {
         if (root == NULL)
             return;
 

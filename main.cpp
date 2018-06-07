@@ -25,21 +25,21 @@ public:
 
 class PrintDataFunc {
 public:
-    void operator()(AvlNode<int> *current) {
+    void operator()(AvlNode<int,int> *current) {
         cout << current->getData() << " ";
     }
 };
 
 class PrintHeightFunc {
 public:
-    void operator()(AvlNode<int> *current) {
+    void operator()(AvlNode<int,int> *current) {
         cout << current->getHeight() << " ";
     }
 };
 
 int main() {
 
-    AvlTree<int, Bigger> tree;
+    AvlTree<int,int, Bigger> tree;
     int n1 = 15 ;
     int n2 = 14 ;
     int n3 = 13 ;
