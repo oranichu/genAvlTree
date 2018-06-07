@@ -82,7 +82,7 @@ public:
 
     void setRank (int r) {rank=r;} ;
 
-    void setRankSum (int sum) {sumRank=sum;} ;
+    void setRankSum (int s) {sumRank=s;} ;
 
 
 };
