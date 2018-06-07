@@ -21,6 +21,12 @@ typedef enum {
     LEFT, RIGHT
 } Place;
 
+//Help us determent weather to add to the sum or dec from it.
+typedef enum {
+    ADD, DEC
+} FuncOp;
+
+
 int maxFunc(int x1, int x2) {
     if (x1 > x2) {
         return x1;
@@ -36,10 +42,12 @@ class AvlNode {
     AvlNode<T, U> *rSon;
     int height;
     int rank;
-    U sumRank;
+    U rankVal; //Initial rankVal , can't change .
+    U rankSum;
 public:
-    AvlNode(const T &data,const U &sum) : data(data), father(NULL), lSon(NULL),
-                             rSon(NULL), height(0), rank(1),sumRank(sum) {};
+    AvlNode(const T &data, const U &sum) : data(data), father(NULL), lSon(NULL),
+                                           rSon(NULL), height(0), rank(1),
+                                           rankVal(sum), rankSum(sum) {};
 
     void setData(const T &d) { data = d; }
 
@@ -78,11 +86,13 @@ public:
 
     int getRank() const { return rank; };
 
-    int getRankSum() const { return sumRank; };
+    const U &getRankSum() const { return rankSum; };
+
+    const U &getRankValue() const { return rankVal; };
 
     void setRank(int r) { rank = r; };
 
-    void setRankSum(int s) { sumRank = s; };
+    void setRankSum(const U &sum) { rankSum = sum; };
 
 
 };
@@ -97,8 +107,9 @@ private:
     CompareFunction cmp;
     int size;
 
+    template<typename Func>
     AvlNode<T, U> *
-    sortInsert(AvlNode<T, U> *current, AvlNode<T, U> *new_node) {
+    sortInsert(AvlNode<T, U> *current, AvlNode<T, U> *new_node, Func f) {
         // if x1 <= x2 of the cmp function we want the new node to be on the left
         if (cmp(new_node->getData(), current->getData()) <= EQUAL) {
             if (current->getLeftSon() == NULL) {
@@ -106,7 +117,7 @@ private:
                 makeSon(current, new_node, LEFT);
             } else { //Left son does exist,continue searching .
                 // rec call to the function , but makes sure so update pointers.
-                makeSon(current, sortInsert(current->getLeftSon(), new_node),
+                makeSon(current, sortInsert(current->getLeftSon(), new_node, f),
                         LEFT);
             }
         } else {
@@ -114,13 +125,16 @@ private:
                 //Right son doesn't exist found place to insert !
                 makeSon(current, new_node, RIGHT);
             } else { //Right son does exist,continue searching .
-                makeSon(current, sortInsert(current->getRightSon(), new_node),
+                makeSon(current,
+                        sortInsert(current->getRightSon(), new_node, f),
                         RIGHT);
             }
         }
         updateHeight(current);
         current->setRank(current->getRank() + 1);
-        return balance(current);
+        //Function f will hold the added node value to add .
+        current->setRankSum(f(current->getRankSum(), ADD));
+        return balance(current, f);
     }
 
     void makeSon(AvlNode<T, U> *father, AvlNode<T, U> *son, Place p) const {
@@ -178,26 +192,28 @@ private:
         return recFind(current->getRightSon(), key);
     }
 
-    AvlNode<T, U> *balance(AvlNode<T, U> *node) {
+    template<typename Func>
+    AvlNode<T, U> *balance(AvlNode<T, U> *node, Func f) {
         int balance = node->diff();
         if (balance > 1) {
             if (node->getLeftSon()->diff() >= 0) {
-                return llRotation(node);
+                return llRotation(node, f);
             } else {
-                return lrRotation(node);
+                return lrRotation(node, f);
             }
-        } else if (balance < -1) {
+        } else if (balance< - 1) {
             if (node->getRightSon()->diff() > 0) {
-                return rlRotation(node);
+                return rlRotation(node, f);
             } else {
-                return rrRotation(node);
+                return rrRotation(node, f);
             }
         }
         // Tree is balanced , return original root  .
         return node;
     }
 
-    AvlNode<T, U> *rightRotation(AvlNode<T, U> *node) {
+    template<typename Func>
+    AvlNode<T, U> *rightRotation(AvlNode<T, U> *node, Func f) {
         AvlNode<T, U> *tempA = node->getLeftSon();
         tempA->setFather(node->getFather());
         makeSon(node, node->getLeftSon()->getRightSon(), LEFT);
@@ -206,10 +222,13 @@ private:
         updateHeight(tempA);
         updateRank(node);
         updateRank(tempA);
+        updateRankSum(node, f);
+        updateRankSum(tempA, f);
         return tempA;
     }
 
-    AvlNode<T, U> *leftRotation(AvlNode<T, U> *node) {
+    template<typename Func>
+    AvlNode<T, U> *leftRotation(AvlNode<T, U> *node, Func f) {
         AvlNode<T, U> *tempA = node->getRightSon();
         tempA->setFather(node->getFather());
         makeSon(node, node->getRightSon()->getLeftSon(), RIGHT);
@@ -218,6 +237,8 @@ private:
         updateHeight(tempA);
         updateRank(node);
         updateRank(tempA);
+        updateRankSum(node, f);
+        updateRankSum(tempA, f);
         return tempA;
     }
 
@@ -233,7 +254,7 @@ private:
     }
 
     void updateRank(AvlNode<T, U> *node) {
-        int rightSonR = 0 , leftSonR= 0 ;
+        int rightSonR = 0, leftSonR = 0;
         if (node->getLeftSon() != NULL) {
             leftSonR = node->getLeftSon()->getRank();
         }
@@ -243,22 +264,39 @@ private:
         node->setRank(1 + rightSonR + leftSonR);
     }
 
-    AvlNode<T, U> *llRotation(AvlNode<T, U> *node) {
-        return rightRotation(node);
+    template<typename Func>
+    void updateRankSum(AvlNode<T, U> *node, Func f) {
+        int rightSonRankSum = 0, leftSonRankSum = 0;
+        if (node->getLeftSon() != NULL) {
+            leftSonRankSum = node->getLeftSon()->getRankSum();
+        }
+        if (node->getRightSon() != NULL) {
+            rightSonRankSum = node->getRightSon()->getRankSum();
+        }
+        node->setRankSum(
+                f(leftSonRankSum, rightSonRankSum, node->getRankValue()));
     }
 
-    AvlNode<T, U> *lrRotation(AvlNode<T, U> *node) {
-        node->setLeftSon(leftRotation(node->getLeftSon()));
-        return rightRotation(node);
+    template<typename Func>
+    AvlNode<T, U> *llRotation(AvlNode<T, U> *node, Func f) {
+        return rightRotation(node, f);
     }
 
-    AvlNode<T, U> *rlRotation(AvlNode<T, U> *node) {
-        node->setRightSon(rightRotation(node->getRightSon()));
-        return leftRotation(node);
+    template<typename Func>
+    AvlNode<T, U> *lrRotation(AvlNode<T, U> *node, Func f) {
+        node->setLeftSon(leftRotation(node->getLeftSon(), f));
+        return rightRotation(node, f);
     }
 
-    AvlNode<T, U> *rrRotation(AvlNode<T, U> *node) {
-        return leftRotation(node);
+    template<typename Func>
+    AvlNode<T, U> *rlRotation(AvlNode<T, U> *node, Func f) {
+        node->setRightSon(rightRotation(node->getRightSon(), f));
+        return leftRotation(node, f);
+    }
+
+    template<typename Func>
+    AvlNode<T, U> *rrRotation(AvlNode<T, U> *node, Func f) {
+        return leftRotation(node, f);
     }
 
     AvlNode<T, U> *findMinReplace(AvlNode<T, U> *current) const {
@@ -271,33 +309,37 @@ private:
         return current;
     }
 
+    template<typename Func>
     AvlNode<T, U> *
-    removeTwoSons(AvlNode<T, U> *current, AvlNode<T, U> *bad_node) {
+    removeTwoSons(AvlNode<T, U> *current, AvlNode<T, U> *bad_node, Func f) {
         if (cmp(bad_node->getData(), current->getData()) == EQUAL) {
             AvlNode<T, U> *replace_node = findMinReplace(
                     bad_node->getRightSon());
             current->setData(replace_node->getData());
             makeSon(current,
                     removeOneOrNoSons(current->getRightSon(), replace_node,
-                                      RIGHT), RIGHT);
+                                      RIGHT, f), RIGHT);
         } else if (cmp(bad_node->getData(), current->getData()) == GO_LEFT) {
             // rec call to the function , but makes sure so update pointers.
             makeSon(current,
-                    removeTwoSons(current->getLeftSon(), bad_node),
+                    removeTwoSons(current->getLeftSon(), bad_node, f),
                     LEFT);
         } else { //go right.
             makeSon(current,
-                    removeTwoSons(current->getRightSon(), bad_node),
+                    removeTwoSons(current->getRightSon(), bad_node, f),
                     RIGHT);
         }
         updateHeight(current);
         current->setRank(current->getRank() - 1);
-        return balance(current);
+        //Function f will hold the added node value to DEC .
+        current->setRankSum(f(current->getRankSum(), DEC));
+        return balance(current, f);
     }
 
+    template<typename Func>
     AvlNode<T, U> *
     removeOneOrNoSons(AvlNode<T, U> *current, AvlNode<T, U> *bad_node,
-                      Place p) {
+                      Place p, Func f) {
         if (cmp(bad_node->getData(), current->getData()) == EQUAL) {
             AvlNode<T, U> *temp = (p == LEFT) ? current->getLeftSon()
                                               : current->getRightSon();
@@ -307,16 +349,18 @@ private:
         if (cmp(bad_node->getData(), current->getData()) == GO_LEFT) {
             // rec call to the function , but makes sure so update pointers.
             makeSon(current,
-                    removeOneOrNoSons(current->getLeftSon(), bad_node, p),
+                    removeOneOrNoSons(current->getLeftSon(), bad_node, p, f),
                     LEFT);
         } else { //go right.
             makeSon(current,
-                    removeOneOrNoSons(current->getRightSon(), bad_node, p),
+                    removeOneOrNoSons(current->getRightSon(), bad_node, p, f),
                     RIGHT);
         }
         updateHeight(current);
         current->setRank(current->getRank() - 1);
-        return balance(current);
+        //Function f will hold the added node value to DEC .
+        current->setRankSum(f(current->getRankSum(), DEC));
+        return balance(current, f);
     }
 
 public:
@@ -335,14 +379,15 @@ public:
         return size;
     }
 
-    void insert(const T &data,const U &sum) {
-        AvlNode<T, U> *new_node = new AvlNode<T, U>(data,sum);
+    template<typename Func>
+    void insert(const T &data, const U &sum, Func f) {
+        AvlNode<T, U> *new_node = new AvlNode<T, U>(data, sum);
         size++;
         if (root == NULL) {
             root = new_node;
             return;
         }
-        root = sortInsert(root, new_node);
+        root = sortInsert(root, new_node, f);
 
     }
 
@@ -365,20 +410,21 @@ public:
         startPostorder(root, f);
     }
 
-    bool removeNode(const T &key) {
+    template<typename Func>
+    bool removeNode(const T &key, Func f) {
         AvlNode<T, U> *node_to_remove = find(key);
         if (node_to_remove == NULL) {
             return false;
         }
         if (node_to_remove->getLeftSon() != NULL &&
             node_to_remove->getRightSon() != NULL) {
-            root = removeTwoSons(root, node_to_remove);
+            root = removeTwoSons(root, node_to_remove, f);
         } else if (node_to_remove->getLeftSon() != NULL) {
-            root = removeOneOrNoSons(root, node_to_remove, LEFT);
+            root = removeOneOrNoSons(root, node_to_remove, LEFT, f);
         } else if (node_to_remove->getRightSon() != NULL) {
-            root = removeOneOrNoSons(root, node_to_remove, RIGHT);
+            root = removeOneOrNoSons(root, node_to_remove, RIGHT, f);
         } else { //for no sons it's same case as one son.
-            root = removeOneOrNoSons(root, node_to_remove, LEFT);
+            root = removeOneOrNoSons(root, node_to_remove, LEFT, f);
         }
         size--;
         return true;
@@ -475,7 +521,7 @@ void printRank(AvlNode<int, int> *root, Trunk *prev, bool isLeft) {
     }
 
     showTrunks(trunk);
-    cout << root->getRank() << endl;
+    cout << root->getRankSum() << endl;
     if (prev)
         prev->str = prev_str;
 

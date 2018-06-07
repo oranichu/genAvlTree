@@ -37,6 +37,24 @@ public:
     }
 };
 
+class AddInt {
+    int val ;
+public:
+     explicit AddInt(int val) :val(val){}
+    int operator()(int x,FuncOp t){
+        if (t==DEC) {
+            return x-val ;
+        }
+        return x+val ;
+    }
+    int operator() (int x,int y){
+        return x+y - val  ;
+    }
+    int operator()(int x,int y,int z){
+        return x+y+z ;
+    }
+
+};
 int main() {
 
     AvlTree<int,int, Bigger> tree;
@@ -55,25 +73,35 @@ int main() {
     int n13 = 3 ;
     int n14 = 2;
     int n15 = 1 ;
-    int n = 0 ;
+    int n = 4 ;
+    AddInt f1(4);
 
-    tree.insert(n1,n);
-    tree.insert(n2,n);
-    tree.insert(n3,n);
-    tree.insert(n4,n);
-    tree.insert(n5,n);
-    tree.insert(n6,n);
-    tree.insert(n7,n);
-    tree.insert(n8,n);
-    tree.insert(n9,n);
-    tree.insert(n10,n);
-    tree.insert(n11,n);
-    tree.insert(n12,n);
-    tree.insert(n13,n);
-    tree.insert(n14,n);
-    tree.insert(n15,n);
+    tree.insert(n8,n,AddInt(4));
+    tree.insert(n9,n,AddInt(1));
+    tree.insert(n11,n,f1);
+    tree.insert(n12,n,f1);
+    tree.insert(n3,n,f1);
+    tree.insert(n1,n,AddInt(1));
+    tree.insert(n2,n,f1);
+    tree.insert(n4,n,AddInt(0));
+    tree.insert(n15,n,f1);
+    tree.insert(n5,n,f1);
+    tree.insert(n6,n,f1);
+    tree.insert(n7,n,f1);
+    tree.insert(n13,n,f1);
+    tree.insert(n14,n,AddInt(9));
+    tree.insert(n10,n,f1);
+/*
+    tree.removeNode(n8,f1);
+    tree.removeNode(n1,f1);
 
-    PrintRankFunc p ;
+    tree.removeNode(n2,f1);
+    tree.removeNode(n4,f1);
+    tree.removeNode(n8,f1);
+    tree.removeNode(n3,f1);
+*/
+
+
 
     printTree(tree.getRoot(), NULL, false);
     cout << "****************************" << endl ;
