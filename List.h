@@ -42,16 +42,20 @@ public:
     ~List(){
         destroyList(head);
     }
-    void insert(const T& data){
-        Node<T>* node = new Node<T>(data);
-        Node<T>* next = head->getNext();
-        node->setNext(next);
-        node->setPrev(head);
-        head->setNext(node);
-        if (next != NULL){
-            next->setPrev(node);
+    bool insert(const T& data){
+        if (find(data) == NULL){
+            Node<T>* node = new Node<T>(data);
+            Node<T>* next = head->getNext();
+            node->setNext(next);
+            node->setPrev(head);
+            head->setNext(node);
+            if (next != NULL){
+                next->setPrev(node);
+            }
+            size++;
+            return true;
         }
-        size++;
+        return false;
     }
     Node<T>* find(const T& data){
         Node<T>* curr = head;

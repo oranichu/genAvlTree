@@ -67,13 +67,19 @@ int main() {
     List<int, IntCmp> intArr(-1);
     intArr.insert(4);
     intArr.insert(6);
+    bool b = intArr.insert(6);
+    cout << "test : ";
+    if (b == false) {
+        cout << "success" << endl;
+    }
     intArr.insert(3);
     cout << "-1, 3, 6, 4 :" << endl;
     intArr.printInt();
-    Node<int>* p = intArr.find(6);
+    Node<int> *p = intArr.find(6);
     cout << "6=" << p->getData() << endl;
     p = intArr.find(7);
-    if(p == NULL){
+    cout << "test : ";
+    if (p == NULL) {
         cout << "success" << endl;
     }
     intArr.destroy(6);
@@ -83,8 +89,14 @@ int main() {
     intArr.destroy(4);
     cout << "-1, 6, 3 :" << endl;
     intArr.printInt();
+    b = intArr.destroy(4);
+    cout << "test : ";
+    if (b == false) {
+        cout << "success" << endl;
+    }
     intArr.insert(4);
-    if (intArr.destroy(9) == false){
+    cout << "test : ";
+    if (intArr.destroy(9) == false) {
         cout << "success" << endl;
     }
 
