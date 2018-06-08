@@ -3,4 +3,4 @@ project(genTree)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(genTree AvlTree.h main.cpp List.h testMacros.h)
+add_executable(genTree AvlTree.h main.cpp List.h testMacros.h Hash.h)
