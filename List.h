@@ -26,6 +26,7 @@ public:
 template <typename T, typename CMP>
 class List{
     Node<T>* head;
+    Node<T>* itr;
     int size;
     CMP cmp;
 
@@ -42,17 +43,20 @@ public:
     ~List(){
         destroyList(head);
     }
+    void blindInsert(const T& data){
+        Node<T>* node = new Node<T>(data);
+        Node<T>* next = head->getNext();
+        node->setNext(next);
+        node->setPrev(head);
+        head->setNext(node);
+        if (next != NULL){
+            next->setPrev(node);
+        }
+        size++;
+    }
     bool insert(const T& data){
         if (find(data) == NULL){
-            Node<T>* node = new Node<T>(data);
-            Node<T>* next = head->getNext();
-            node->setNext(next);
-            node->setPrev(head);
-            head->setNext(node);
-            if (next != NULL){
-                next->setPrev(node);
-            }
-            size++;
+            blindInsert(data);
             return true;
         }
         return false;
@@ -83,6 +87,19 @@ public:
         size--;
         return true;
     }
+    Node<T>* getFirst(){
+        itr = head->getNext();
+        return itr;
+    }
+    Node<T>* getCurr(){
+        return itr;
+    }
+    Node<T>* getNext(){
+        itr = itr->getNext();
+        return itr;
+    }
+
+    /// for testing ///
     void printInt(){
         Node<T>* curr = head;
         while (curr != NULL){
