@@ -4,6 +4,8 @@
 
 #ifndef PROJECT_LIST_H
 #define PROJECT_LIST_H
+#include <iostream>
+
 
 template <typename T>
 class Node{
@@ -40,7 +42,7 @@ public:
     void insert(const T& data){
         Node<T>* node = new Node<T>(data);
         node->setNext(head->getNext());
-        node->getPrev(head);
+        node->getPrev(head); /////////// what the fuck does this mean ?
         head->setNext(node);
     }
     template <typename CMP>
@@ -62,7 +64,7 @@ public:
             return false;
         }
         Node<T>* prev = node->getPrev();
-        node<T>* next = node->getNext();
+        Node<T>* next = node->getNext();
         prev->setNext(next);
         if(next != NULL){
             next->setPrev(prev);
