@@ -47,9 +47,7 @@ public:
         }
         return x+val ;
     }
-    int operator() (int x,int y){
-        return x+y - val  ;
-    }
+
     int operator()(int x,int y,int z){
         return x+y+z ;
     }
@@ -91,19 +89,21 @@ int main() {
     tree.insert(13,13,AddInt(13));
     tree.insert(14,14,AddInt(14));
     tree.insert(15,15,AddInt(15));
-/*
-    tree.removeNode(n8,f1);
-    tree.removeNode(n1,f1);
+    printRank(tree.getRoot(), NULL, false);
 
-    tree.removeNode(n2,f1);
-    tree.removeNode(n4,f1);
-    tree.removeNode(n8,f1);
-    tree.removeNode(n3,f1);
+
+    //tree.removeNode(8,AddInt(8));
+    tree.removeNode(1,AddInt(1));
+    tree.removeNode(15,AddInt(15));
+
+/*
+    tree.removeNode(2,AddInt(2));
+    tree.removeNode(4,AddInt(4));
+    tree.removeNode(8,AddInt(8));
+    tree.removeNode(3,AddInt(3));
+
 */
 
-
-
-    printTree(tree.getRoot(), NULL, false);
     cout << "****************************" << endl ;
     printRank(tree.getRoot(), NULL, false);
 
