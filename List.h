@@ -13,7 +13,7 @@ class Node{
     Node<T>* next;
     Node<T>* prev;
 public:
-    Node(const T& data) : data(data), next(NULL), prev(NULL){}
+    explicit Node(const T& data) : data(data), next(NULL), prev(NULL){}
     const T& getData(){ return data;}
     void setData(const T& data){this->data = data;};
     Node<T>* getNext(){ return next;}
@@ -27,11 +27,9 @@ template <typename T, typename CMP>
 class List{
     Node<T>* head;
     int size;
-public:
-    List(const T& emptyValue) : head(new Node<T>(emptyValue)), size(0){}
-    ~List(){
-        destroyList(head);
-    }
+    CMP cmp;
+
+private:
     void destroyList(Node<T>* node){
         if(node==NULL){
             return;
@@ -39,17 +37,26 @@ public:
         destroyList(node->getNext());
         delete node;
     }
+public:
+    explicit List(const T& emptyValue) : head(new Node<T>(emptyValue)), size(0){}
+    ~List(){
+        destroyList(head);
+    }
     void insert(const T& data){
         Node<T>* node = new Node<T>(data);
-        node->setNext(head->getNext());
-        node->getPrev(head); /////////// what the fuck does this mean ?
+        Node<T>* next = head->getNext();
+        node->setNext(next);
+        node->setPrev(head);
         head->setNext(node);
+        if (next != NULL){
+            next->setPrev(node);
+        }
+        size++;
     }
-    template <typename CMP>
     Node<T>* find(const T& data){
         Node<T>* curr = head;
         Node<T>* key = new Node<T>(data);
-        while (CMP(curr, key) == false){
+        while (cmp(curr->getData(), key->getData()) == false){
             curr = curr->getNext();
             if (curr == NULL){
                 return NULL;
@@ -69,7 +76,16 @@ public:
         if(next != NULL){
             next->setPrev(prev);
         }
+        size--;
         return true;
+    }
+    void printInt(){
+        Node<T>* curr = head;
+        while (curr != NULL){
+            cout << "[ " << curr->getData() << " ] -> ";
+            curr = curr->getNext();
+        }
+        cout << "NULL" << endl;
     }
 };
 #endif //PROJECT_LIST_H

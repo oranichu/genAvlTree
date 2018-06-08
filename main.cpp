@@ -8,53 +8,87 @@
 #include <string.h>
 #include <iostream>
 #include "AvlTree.h"
+#include "List.h"
 
 
 class Bigger {
 public:
     int operator()(int x1, int x2) {
-        if (x1==x2) {
-            return EQUAL ;
+        if (x1 == x2) {
+            return EQUAL;
         }
-        if (x1<x2) {
-            return  GO_LEFT ;
+        if (x1 < x2) {
+            return GO_LEFT;
         }
-        return GO_RIGHT ;
+        return GO_RIGHT;
     }
 };
 
 class PrintRankFunc {
 public:
-    void operator()(AvlNode<int,int> *current) {
+    void operator()(AvlNode<int, int> *current) {
         cout << current->getRank() << " ";
     }
 };
 
 class PrintHeightFunc {
 public:
-    void operator()(AvlNode<int,int> *current) {
+    void operator()(AvlNode<int, int> *current) {
         cout << current->getHeight() << " ";
     }
 };
 
 class AddInt {
-    int val ;
+    int val;
 public:
-     explicit AddInt(int val) :val(val){}
-    int operator()(int x,FuncOp t){
-        if (t==DEC) {
-            return x-val ;
+    explicit AddInt(int val) : val(val) {}
+
+    int operator()(int x, FuncOp t) {
+        if (t == DEC) {
+            return x - val;
         }
-        return x+val ;
+        return x + val;
     }
 
-    int operator()(int x,int y,int z){
-        return x+y+z ;
+    int operator()(int x, int y, int z) {
+        return x + y + z;
     }
 
 };
-int main() {
 
+class IntCmp {
+public:
+    bool operator()(int a, int b) {
+        return a == b;
+    }
+};
+
+int main() {
+    List<int, IntCmp> intArr(-1);
+    intArr.insert(4);
+    intArr.insert(6);
+    intArr.insert(3);
+    cout << "-1, 3, 6, 4 :" << endl;
+    intArr.printInt();
+    Node<int>* p = intArr.find(6);
+    cout << "6=" << p->getData() << endl;
+    p = intArr.find(7);
+    if(p == NULL){
+        cout << "success" << endl;
+    }
+    intArr.destroy(6);
+    cout << "-1, 3, 4 :" << endl;
+    intArr.printInt();
+    intArr.insert(6);
+    intArr.destroy(4);
+    cout << "-1, 6, 3 :" << endl;
+    intArr.printInt();
+    intArr.insert(4);
+    if (intArr.destroy(9) == false){
+        cout << "success" << endl;
+    }
+
+/*
     AvlTree<int,int, Bigger> tree;
     int n1 = 1 ;
     int n2 = 2 ;
@@ -103,10 +137,10 @@ int main() {
     tree.removeNode(3,AddInt(3));
 
 */
-
+/*
     cout << "****************************" << endl ;
     printRank(tree.getRoot(), NULL, false);
 
-
+*/
     return 0;
 }
