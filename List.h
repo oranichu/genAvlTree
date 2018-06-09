@@ -23,12 +23,11 @@ public:
 };
 
 //not complete
-template <typename T, typename CMP>
+template <typename T>
 class List{
     Node<T>* head;
     Node<T>* itr;
     int size;
-    CMP cmp;
 
 private:
     void destroyList(Node<T>* node){
@@ -39,6 +38,7 @@ private:
         delete node;
     }
 public:
+    List () : size(0){}
     explicit List(const T& emptyValue) : head(new Node<T>(emptyValue)), size(0){}
     ~List(){
         destroyList(head);
@@ -64,7 +64,7 @@ public:
     Node<T>* find(const T& data){
         Node<T>* curr = head;
         Node<T>* key = new Node<T>(data);
-        while (cmp(curr->getData(), key->getData()) == false){
+        while (curr->getData() != key->getData()){
             curr = curr->getNext();
             if (curr == NULL){
                 return NULL;

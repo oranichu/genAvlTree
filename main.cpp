@@ -9,7 +9,7 @@
 #include <iostream>
 #include "AvlTree.h"
 #include "List.h"
-
+#include "Hash.h"
 
 class Bigger {
 public:
@@ -63,8 +63,8 @@ public:
     }
 };
 
-int main() {
-    List<int, IntCmp> intArr(-1);
+void listTests() {
+    List<int> intArr(-1);
     intArr.insert(4);
     intArr.insert(6);
     bool b = intArr.insert(6);
@@ -99,6 +99,54 @@ int main() {
     if (intArr.destroy(9) == false) {
         cout << "success" << endl;
     }
+}
+
+class IntKey {
+public:
+    int operator()(int a){ return a;}
+};
+
+void hashTests() {
+    int arr[] = {1, 4, 3, 2, 12, 14, 13};
+    Hash<int, IntKey> hash(arr, 7, -1);
+    cout << endl << endl << "7 = " << hash.getSize() << endl << endl;
+    hash.insert(5);
+    hash.insert(15);
+    hash.insert(25);
+    hash.insert(35);
+    hash.printInt();
+    cout << endl << endl << "11 = " << hash.getSize() << endl << endl;
+    cout << "new hash***************************" << endl << endl;
+    hash.insert(11);
+    hash.insert(50);
+    hash.insert(53);
+    hash.insert(54);
+    hash.insert(55);
+    hash.insert(56);
+    hash.insert(57);
+    hash.insert(58);
+    hash.printInt();
+    cout << endl << endl << "19 = " << hash.getSize() << endl << endl;
+    cout << "test : ";
+    if (hash.find(57) != NULL && hash.find(57)->getData() == 57){
+        cout << "success" << endl;
+    }
+    cout << "test : ";
+    if (hash.find(98) == NULL){
+        cout << "success" << endl;
+    }
+    hash.destroy(57);
+    cout << "test : ";
+    if (hash.find(57) == NULL){
+        cout << "success" << endl;
+    }
+    cout << "test : ";
+    if (hash.insert(50) == false){
+        cout << "success" << endl;
+    }
+}
+
+int main() {
 
 /*
     AvlTree<int,int, Bigger> tree;
@@ -156,3 +204,13 @@ int main() {
 */
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
