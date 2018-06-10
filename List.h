@@ -63,14 +63,13 @@ public:
     }
     Node<T>* find(const T& data){
         Node<T>* curr = head;
-        Node<T>* key = new Node<T>(data);
-        while (curr->getData() != key->getData()){
+        T key(data);
+        while (curr->getData() != key){
             curr = curr->getNext();
             if (curr == NULL){
                 return NULL;
             }
         }
-        delete key;
         return curr;
     }
     bool destroy(const T& data){
@@ -85,6 +84,7 @@ public:
             next->setPrev(prev);
         }
         size--;
+        delete node;
         return true;
     }
     Node<T>* getFirst(){

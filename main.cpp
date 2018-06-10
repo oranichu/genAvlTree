@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
-#include "AvlTree.h"
+#include "avlTree.h"
 #include "List.h"
 #include "Hash.h"
 
@@ -147,7 +147,8 @@ void hashTests() {
 }
 
 int main() {
-
+    cout << "hello world" << endl;
+    listTests();
 /*
     AvlTree<int,int, Bigger> tree;
     int n1 = 1 ;
