@@ -148,7 +148,7 @@ void hashTests() {
 
 int main() {
     cout << "hello world" << endl;
-    listTests();
+    hashTests();
 /*
     AvlTree<int,int, Bigger> tree;
     int n1 = 1 ;
